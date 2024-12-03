@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Online_Shop
+﻿namespace OnlineShop
 {
-    public abstract class User
+    public class User
     {
         public int ID { get; }
         public string UserName { get; set; }
@@ -16,7 +10,7 @@ namespace Online_Shop
         public string AddressStreet { get; set; }
         public string AddressCity { get; set; }
 
-        protected User(int id, string userName, string password, string email, string phoneNumber, string addressStreet, string addressCity)
+        public User(int id, string userName, string password, string email, string phoneNumber, string addressStreet, string addressCity)
         {
             ID = id;
             UserName = userName;
@@ -28,3 +22,5 @@ namespace Online_Shop
         }
     }
 }
+
+

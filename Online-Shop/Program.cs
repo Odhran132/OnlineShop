@@ -1,196 +1,227 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OnlineShop
 {
     class Program
     {
-        private static List<User> users;
-        private static List<Product> products;
-        private static List<Category> categories;
+        static List<Admin> admins = new List<Admin>();
+        static List<Customer> customers = new List<Customer>();
+        static List<Product> products = new List<Product>();
+        static List<Order> orders = new List<Order>();
+        static Dictionary<int, ShoppingBasket> baskets = new Dictionary<int, ShoppingBasket>();
+        static List<ProductCategory> categories = new List<ProductCategory>();
+
 
         static void Main(string[] args)
         {
-            InitializeData();
-            Run();
+            SeedData();
+            MainMenu();
         }
 
-        private static void InitializeData()
+        static void SeedData()
         {
-            users = new List<User>
-            {
-                new Admin(1, "admin", "password", "admin@example.com", "1234567890", "Admin Street", "Admin City", DateTime.Now),
-                new Customer(2, "customer", "password", "customer@example.com", "0987654321", "Customer Street", "Customer City", "active", "Customer")
-            };
+            // Admin and Customer initialization
+            admins.Add(new Admin(1, "admin1", "password", "admin1@example.com", "1234567890", "Street 1", "City A", DateTime.Now));
+            customers.Add(new Customer(1, "cust1", "password", "cust1@example.com", "1234567890", "Street 2", "City B", "active", "Customer"));
 
-            categories = new List<Category>
-            {
-                new Category(1, "Electronics"),
-                new Category(2, "Clothing"),
-                new Category(3, "Books"),
-                new Category(4, "Furniture"),
-                new Category(5, "Toys")
-            };
+            // Product Categories
+            categories.Add(new ProductCategory(1, "Electronics"));
+            categories.Add(new ProductCategory(2, "Clothing"));
+            categories.Add(new ProductCategory(3, "Home Appliances"));
 
-            products = new List<Product>
+            // Products
+            products.Add(new Product(1, "Laptop", 1, 800.00, 10)); // Category: Electronics
+            products.Add(new Product(2, "Smartphone", 1, 500.00, 15)); // Category: Electronics
+            products.Add(new Product(3, "T-Shirt", 2, 20.00, 50)); // Category: Clothing
+
+            // Shopping baskets
+            foreach (var customer in customers)
             {
-                new Product(1, "Laptop", 999.99m, 10, categories[0]),
-                new Product(2, "T-shirt", 19.99m, 50, categories[1]),
-                new Product(3, "Novel", 14.99m, 20, categories[2]),
-                new Product(4, "Chair", 49.99m, 15, categories[3]),
-                new Product(5, "Action Figure", 29.99m, 30, categories[4])
-            };
+                baskets[customer.ID] = new ShoppingBasket();
+            }
         }
 
-        private static void Run()
+
+        static void MainMenu()
         {
             while (true)
             {
                 Console.Clear();
                 Console.WriteLine("Welcome to Online Shop");
-                Console.WriteLine("1. Admin");
-                Console.WriteLine("2. Customer");
+                Console.WriteLine("1. Admin Menu");
+                Console.WriteLine("2. Customer Menu");
                 Console.WriteLine("3. Exit");
-                Console.Write("Select an option: ");
-                string choice = Console.ReadLine();
 
-                if (choice == "1")
+                switch (Console.ReadLine())
                 {
-                    AdminMenu();
-                }
-                else if (choice == "2")
-                {
-                    CustomerMenu();
-                }
-                else if (choice == "3")
-                {
-                    break;
-                }
-                else
-                {
-                    Console.WriteLine("Invalid choice. Press Enter to try again.");
-                    Console.ReadLine();
+                    case "1":
+                        AdminMenu();
+                        break;
+                    case "2":
+                        CustomerMenu();
+                        break;
+                    case "3":
+                        return;
+                    default:
+                        Console.WriteLine("Invalid choice. Try again.");
+                        break;
                 }
             }
         }
 
-        private static void AdminMenu()
+        static void AdminMenu()
         {
-            Console.Write("Enter Admin ID: ");
-            int id = int.Parse(Console.ReadLine());
+            Console.Write("Enter Admin Username: ");
+            string username = Console.ReadLine();
             Console.Write("Enter Password: ");
             string password = Console.ReadLine();
 
-            Admin admin = users.Find(u => u is Admin && u.ID == id && u.Password == password) as Admin;
+            var admin = admins.FirstOrDefault(a => a.UserName == username && a.Password == password);
 
             if (admin == null)
             {
-                Console.WriteLine("Invalid credentials. Press Enter to return to the main menu.");
-                Console.ReadLine();
+                Console.WriteLine("Invalid credentials.");
+                return;
+            }
+
+            admin.LastLogin = DateTime.Now;
+
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Admin Menu");
+                Console.WriteLine("1. Add Product");
+                Console.WriteLine("2. View Products");
+                Console.WriteLine("3. Logout");
+
+                switch (Console.ReadLine())
+                {
+                    case "1": // Add Product
+                        Console.Write("Enter Product Name: ");
+                        string name = Console.ReadLine();
+
+                        Console.WriteLine("Available Categories:");
+                        foreach (var category in categories)
+                        {
+                            Console.WriteLine($"ID: {category.CategoryID}, Name: {category.CategoryName}");
+                        }
+
+                        Console.Write("Enter Category ID: ");
+                        int categoryId = Convert.ToInt32(Console.ReadLine());
+                        if (!categories.Any(c => c.CategoryID == categoryId))
+                        {
+                            Console.WriteLine("Invalid Category ID. Product not added.");
+                            break;
+                        }
+
+                        Console.Write("Enter Price: ");
+                        double price = Convert.ToDouble(Console.ReadLine());
+                        Console.Write("Enter Stock Quantity: ");
+                        int quantity = Convert.ToInt32(Console.ReadLine());
+
+                        int newId = products.Any() ? products.Max(p => p.ProductID) + 1 : 1;
+                        products.Add(new Product(newId, name, categoryId, price, quantity));
+                        Console.WriteLine("Product added successfully.");
+                        break;
+
+
+                    case "2":
+                        BrowseProducts();
+                        break;
+
+                    case "3":
+                        return;
+
+                    default:
+                        Console.WriteLine("Invalid choice.");
+                        break;
+                }
+            }
+        }
+
+        static void CustomerMenu()
+        {
+            Console.Write("Enter Customer Username: ");
+            string username = Console.ReadLine();
+            Console.Write("Enter Password: ");
+            string password = Console.ReadLine();
+
+            var customer = customers.FirstOrDefault(c => c.UserName == username && c.Password == password);
+
+            if (customer == null)
+            {
+                Console.WriteLine("Invalid credentials.");
                 return;
             }
 
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine("Admin Menu");
-                Console.WriteLine("1. View Products");
-                Console.WriteLine("2. Add Product");
-                Console.WriteLine("3. Update Product");
-                Console.WriteLine("4. Remove Product");
-                Console.WriteLine("5. Save Products to CSV");
-                Console.WriteLine("6. Logout");
-                Console.Write("Select an option: ");
-                string choice = Console.ReadLine();
+                Console.WriteLine("Customer Menu");
+                Console.WriteLine("1. Browse Products");
+                Console.WriteLine("2. View Basket");
+                Console.WriteLine("3. Place Order");
+                Console.WriteLine("4. View Order History");
+                Console.WriteLine("5. Logout");
 
-                if (choice == "1")
+                switch (Console.ReadLine())
                 {
-                    ViewProducts();
-                }
-                else if (choice == "2")
-                {
-                    AddProduct();
-                }
-                else if (choice == "3")
-                {
-                    UpdateProduct();
-                }
-                else if (choice == "4")
-                {
-                    RemoveProduct();
-                }
-                else if (choice == "5")
-                {
-                    SaveProductsToCsv();
-                }
-                else if (choice == "6")
-                {
-                    break;
-                }
-                else
-                {
-                    Console.WriteLine("Invalid choice. Press Enter to try again.");
-                    Console.ReadLine();
+                    case "1":
+                        BrowseProducts();
+                        Console.Write("Enter Product ID to add to basket: ");
+                        int productId = Convert.ToInt32(Console.ReadLine());
+                        Console.Write("Enter Quantity: ");
+                        int quantity = Convert.ToInt32(Console.ReadLine());
+
+                        var product = products.FirstOrDefault(p => p.ProductID == productId);
+                        if (product == null)
+                        {
+                            Console.WriteLine("Product not found.");
+                        }
+                        else
+                        {
+                            baskets[customer.ID].AddProduct(new Product(product.ProductID, product.Description, product.CategoryID, product.Price, quantity));
+                        }
+                        break;
+
+                    case "2":
+                        baskets[customer.ID].ViewBasket();
+                        break;
+
+                    case "3":
+                        var order = new Order(customer.ID, DateTime.Now, new List<Product>(baskets[customer.ID].Products));
+                        orders.Add(order);
+                        baskets[customer.ID].ClearBasket();
+                        Console.WriteLine($"Order placed successfully! Order ID: {order.OrderID}, Total: {order.CalculateTotal():C}");
+                        break;
+
+                    case "4":
+                        customer.ViewOrderHistory(orders);
+                        break;
+
+                    case "5":
+                        return;
+
+                    default:
+                        Console.WriteLine("Invalid choice.");
+                        break;
                 }
             }
         }
 
-        private static void CustomerMenu()
+        static void BrowseProducts()
         {
             Console.Clear();
-            Console.WriteLine("Customer Menu");
-            // Add functionality for the Customer menu here
-            Console.WriteLine("Press Enter to return to the main menu.");
-            Console.ReadLine();
-        }
-
-        private static void ViewProducts()
-        {
-            Console.Clear();
-            Console.WriteLine("Products:");
+            Console.WriteLine("Available Products:");
             foreach (var product in products)
             {
-                Console.WriteLine(product);
+                var category = categories.FirstOrDefault(c => c.CategoryID == product.CategoryID)?.CategoryName ?? "Unknown";
+                Console.WriteLine($"ID: {product.ProductID}, Name: {product.Description}, Category: {category}, Price: {product.Price:C}, Stock: {product.StockQuantity}");
             }
-            Console.WriteLine("Press Enter to return.");
-            Console.ReadLine();
         }
 
-        private static void AddProduct()
-        {
-            Console.Clear();
-            Console.WriteLine("Add Product");
-            Console.Write("Enter Product Name: ");
-            string name = Console.ReadLine();
-            Console.Write("Enter Price: ");
-            decimal price = decimal.Parse(Console.ReadLine());
-            Console.Write("Enter Stock Quantity: ");
-            int stock = int.Parse(Console.ReadLine());
-            Console.WriteLine("Select Category:");
-            for (int i = 0; i < categories.Count; i++)
-            {
-                Console.WriteLine($"{i + 1}. {categories[i].Name}");
-            }
-            int categoryIndex = int.Parse(Console.ReadLine()) - 1;
-
-            products.Add(new Product(products.Count + 1, name, price, stock, categories[categoryIndex]));
-            Console.WriteLine("Product added successfully. Press Enter to return.");
-            Console.ReadLine();
-        }
-
-        private static void UpdateProduct()
-        {
-            // Implementation for updating a product
-        }
-
-        private static void RemoveProduct()
-        {
-            // Implementation for removing a product
-        }
-
-        private static void SaveProductsToCsv()
-        {
-            // Implementation for saving products to a CSV file
-        }
     }
 }
+
