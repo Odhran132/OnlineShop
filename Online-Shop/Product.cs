@@ -1,31 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Online_Shop
+﻿namespace OnlineShop
 {
     public class Product
     {
-        public int ID { get; }
-        public string Name { get; set; }
-        public decimal Price { get; set; }
-        public int Stock { get; set; }
-        public ProductCategory Category { get; set; }
+        public int ProductID { get; set; }
+        public string Name { get; set; }    
+        public string Description { get; set; }
+        public int CategoryID { get; set; } // Links to ProductCategory
+        public double Price { get; set; }
+        public int StockQuantity { get; set; }
+        public int Quantity { get; set; } // For basket quantity
 
-        public Product(int id, string name, decimal price, int stock, ProductCategory category)
+        public Product(int productID, string name, string description, int categoryId, double price, int stockQuantity)
         {
-            ID = id;
+            ProductID = productID;
             Name = name;
+            Description = description;
+            CategoryID = categoryId;
             Price = price;
-            Stock = stock;
-            Category = category;
+            StockQuantity = stockQuantity;
+            Quantity = 0;
         }
 
-        public override string ToString()
+        public Product(int productID, string description, int categoryID, double price, int quantity)
         {
-            return $"ID: {ID}, Name: {Name}, Price: {Price}, Stock: {Stock}, Category: {Category.Name}";
+            ProductID = productID;
+            Description = description;
+            CategoryID = categoryID;
+            Price = price;
+            Quantity = quantity;
         }
     }
 }
+
+
+

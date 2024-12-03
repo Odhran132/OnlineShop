@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Online_Shop
+﻿namespace OnlineShop
 {
     public class ProductCategory
     {
-        public int ID { get; }
-        public string Name { get; set; }
+        public int CategoryID { get; }
+        public string CategoryName { get; set; }
 
-        public ProductCategory(int id, string name)
+        public ProductCategory(int categoryId, string categoryName)
         {
-            ID = id;
-            Name = name;
+            CategoryID = categoryId;
+            CategoryName = categoryName;
         }
     }
 }
