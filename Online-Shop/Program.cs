@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,20 +28,6 @@ namespace OnlineShop
 
             // Product Categories
             categories.Add(new ProductCategory(1, "Electronics"));
-<<<<<<< HEAD
-            categories.Add(new ProductCategory(2, "Household"));
-            categories.Add(new ProductCategory(3, "Clothing"));
-            categories.Add(new ProductCategory(4, "Books"));
-            categories.Add(new ProductCategory(5, "Toys & Games"));
-
-            // Products
-            products.Add(new Product(1, "LED TV", "65 inch Samsung LED TV", 1, 459.99, 5)); // Category: Electronics
-            products.Add(new Product(2, "Vacuum Cleaner", "Dyson V11 Vacuum Cleaner", 2, 599.99, 10)); // Category: Household
-            products.Add(new Product(3, "Running Shoes", "Nike Air Zoom Pegasus", 3, 120.00, 20)); // Category: Clothing
-            products.Add(new Product(4, "Software programming", "C# for beginners", 4, 12.99, 25)); // Category: Books
-            products.Add(new Product(5, "Blender", "NutriBullet Pro", 2, 89.99, 15)); // Category: Household   
-            products.Add(new Product(6, "Smartphone", "iPhone 13", 5, 999.99, 8)); // Category: Toys & Games
-=======
             categories.Add(new ProductCategory(2, "Clothing"));
             categories.Add(new ProductCategory(3, "Home Appliances"));
 
@@ -49,7 +35,6 @@ namespace OnlineShop
             products.Add(new Product(1, "Laptop", 1, 800.00, 10)); // Category: Electronics
             products.Add(new Product(2, "Smartphone", 1, 500.00, 15)); // Category: Electronics
             products.Add(new Product(3, "T-Shirt", 2, 20.00, 50)); // Category: Clothing
->>>>>>> 2177599e846f1860068d8d17c575ae084c0b16ae
 
             // Shopping baskets
             foreach (var customer in customers)
@@ -239,4 +224,3 @@ namespace OnlineShop
 
     }
 }
-
