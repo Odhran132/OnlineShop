@@ -7,7 +7,7 @@
         public string Description { get; set; }
         public int CategoryID { get; set; } // Links to ProductCategory
         public double Price { get; set; }
-        public int StockQuantity { get; set; }
+        public int StockQuantity11111 { get; set; }
         public int Quantity { get; set; } // For basket quantity
 
         public Product(int productID, string name, string description, int categoryId, double price, int stockQuantity)
