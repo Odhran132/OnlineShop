@@ -2,32 +2,24 @@
 {
     public class Product
     {
-        public int ProductID { get; set; }
-        public string Name { get; set; }    
-        public string Description { get; set; }
-        public int CategoryID { get; set; } // Links to ProductCategory
-        public double Price { get; set; }
-        public int StockQuantity11111 { get; set; }
-        public int Quantity { get; set; } // For basket quantity
+        public int ID { get; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public int Stock { get; set; }
+        public ProductCategory Category { get; set; }
 
-        public Product(int productID, string name, string description, int categoryId, double price, int stockQuantity)
+        public Product(int id, string name, decimal price, int stock, ProductCategory category)
         {
-            ProductID = productID;
+            ID = id;
             Name = name;
-            Description = description;
-            CategoryID = categoryId;
             Price = price;
-            StockQuantity = stockQuantity;
-            Quantity = 0;
+            Stock = stock;
+            Category = category;
         }
 
-        public Product(int productID, string description, int categoryID, double price, int quantity)
+        public override string ToString()
         {
-            ProductID = productID;
-            Description = description;
-            CategoryID = categoryID;
-            Price = price;
-            Quantity = quantity;
+            return $"ID: {ID}, Name: {Name}, Price: {Price}, Stock: {Stock}, Category: {Category.Name}";
         }
     }
 }
