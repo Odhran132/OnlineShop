@@ -175,7 +175,7 @@ namespace OnlineShop
             {
                 Console.Clear();
                 Console.WriteLine("Customer Menu");
-                Console.WriteLine("1. Browse Products123");
+                Console.WriteLine("1. Browse Products");
                 Console.WriteLine("2. View Basket");
                 Console.WriteLine("3. Place Order");
                 Console.WriteLine("4. View Order History");
