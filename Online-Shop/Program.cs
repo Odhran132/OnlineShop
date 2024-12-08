@@ -82,7 +82,8 @@ namespace OnlineShop
 
             if (admin == null)
             {
-                Console.WriteLine("Invalid credentials.");
+                Console.WriteLine("Invalid credentials. Press any key to return to the main menu.");
+                Console.ReadKey();
                 return;
             }
 
@@ -91,51 +92,32 @@ namespace OnlineShop
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine("Admin Menu");
-                Console.WriteLine("1. Add Product");
-                Console.WriteLine("2. View Products");
-                Console.WriteLine("3. Logout");
+                Console.WriteLine($"Welcome, {admin.UserName}! Last Login: {admin.LastLogin}");
+                Console.WriteLine("Admin Menu:");
+                Console.WriteLine("1. Manage Products");
+                Console.WriteLine("2. Manage Customers");
+                Console.WriteLine("3. Manage Product Categories");
+                Console.WriteLine("4. Save Products to CSV");
+                Console.WriteLine("5. Logout");
 
                 switch (Console.ReadLine())
                 {
-                    case "1": // Add Product
-                        Console.Write("Enter Product Name: ");
-                        string name = Console.ReadLine();
-
-                        Console.WriteLine("Available Categories:");
-                        foreach (var category in categories)
-                        {
-                            Console.WriteLine($"ID: {category.CategoryID}, Name: {category.CategoryName}");
-                        }
-
-                        Console.Write("Enter Category ID: ");
-                        int categoryId = Convert.ToInt32(Console.ReadLine());
-                        if (!categories.Any(c => c.CategoryID == categoryId))
-                        {
-                            Console.WriteLine("Invalid Category ID. Product not added.");
-                            break;
-                        }
-
-                        Console.Write("Enter Price: ");
-                        double price = Convert.ToDouble(Console.ReadLine());
-                        Console.Write("Enter Stock Quantity: ");
-                        int quantity = Convert.ToInt32(Console.ReadLine());
-
-                        int newId = products.Any() ? products.Max(p => p.ProductID) + 1 : 1;
-                        products.Add(new Product(newId, name, categoryId, price, quantity));
-                        Console.WriteLine("Product added successfully.");
+                    case "1":
+                        ManageProducts();
                         break;
-
-
                     case "2":
-                        BrowseProducts();
+                        //ManageCustomers();
                         break;
-
                     case "3":
+                        //ManageProductCategories();
+                        break;
+                    case "4":
+                        SaveProductsToCSV();
+                        break;
+                    case "5":
                         return;
-
                     default:
-                        Console.WriteLine("Invalid choice.");
+                        Console.WriteLine("Invalid choice. Please try again.");
                         break;
                 }
             }
@@ -169,7 +151,7 @@ namespace OnlineShop
                 switch (Console.ReadLine())
                 {
                     case "1":
-                        BrowseProducts();
+                        ViewAllProducts();
                         Console.Write("Enter Product ID to add to basket: ");
                         int productId = Convert.ToInt32(Console.ReadLine());
                         Console.Write("Enter Quantity: ");
@@ -211,6 +193,7 @@ namespace OnlineShop
             }
         }
 
+        /*
         static void BrowseProducts()
         {
             Console.Clear();
@@ -221,6 +204,299 @@ namespace OnlineShop
                 Console.WriteLine($"ID: {product.ProductID}, Name: {product.Description}, Category: {category}, Price: {product.Price:C}, Stock: {product.StockQuantity}");
             }
         }
+        */
+
+        static void ManageProducts()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Product Management:");
+                Console.WriteLine("1. Add New Product");
+                Console.WriteLine("2. Remove Product");
+                Console.WriteLine("3. Update Product Information");
+                Console.WriteLine("4. View All Products");
+                Console.WriteLine("5. Return to Admin Menu");
+
+                switch (Console.ReadLine())
+                {
+                    case "1": // Add product
+                        AddProduct();
+                        break;
+                    case "2": // Remove product
+                        RemoveProduct();
+                        break;
+                    case "3": // Update product
+                        UpdateProductInfo();
+                        break;
+                    case "4": // View products
+                        ViewAllProducts();
+                        break;
+                    case "5":
+                        return;
+                    default:
+                        Console.WriteLine("Invalid choice. Please try again.");
+                        break;
+                }
+            }
+        }
+
+        static void AddProduct()
+        {
+            Console.Write("Enter Product Name: ");
+            string name = Console.ReadLine();
+
+            Console.WriteLine("Available Categories:");
+            foreach (var category in categories)
+            {
+                Console.WriteLine($"ID: {category.CategoryID}, Name: {category.CategoryName}");
+            }
+
+            Console.Write("Enter Category ID: ");
+            int categoryId = Convert.ToInt32(Console.ReadLine());
+            if (!categories.Any(c => c.CategoryID == categoryId))
+            {
+                Console.WriteLine("Invalid Category ID. Product not added.");
+                return;
+            }
+
+            Console.Write("Enter Price: ");
+            double price = Convert.ToDouble(Console.ReadLine());
+            Console.Write("Enter Stock Quantity: ");
+            int quantity = Convert.ToInt32(Console.ReadLine());
+
+            int newId = products.Any() ? products.Max(p => p.ProductID) + 1 : 1;
+            products.Add(new Product(newId, name, categoryId, price, quantity));
+            Console.WriteLine("Product added successfully.");
+        }
+
+        static void RemoveProduct()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Product Management - Remove Product");
+
+                // Display all products
+                Console.WriteLine("Available Products:");
+                if (products.Count == 0)
+                {
+                    Console.WriteLine("No products available in the system.");
+                }
+                else
+                {
+                    foreach (var product in products)
+                    {
+                        Console.WriteLine($"ID: {product.ProductID}, Name: {product.Description}, Price: {product.Price:C}, Stock: {product.StockQuantity}");
+                    }
+                }
+
+                Console.WriteLine("\nEnter the Product ID to remove or press 'F' to return to the Manage Products menu.");
+                Console.Write("Input: ");
+
+                string input = Console.ReadLine();
+
+                // Check if the user pressed 'F'
+                if (string.Equals(input, "F", StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.Clear();
+                    ManageProducts(); // Redirect to Manage Products menu
+                    return;
+                }
+
+                // Validate if the input is a numeric Product ID
+                if (int.TryParse(input, out int productId))
+                {
+                    var productToRemove = products.FirstOrDefault(p => p.ProductID == productId);
+                    if (productToRemove != null)
+                    {
+                        products.Remove(productToRemove);
+                        Console.WriteLine($"Product '{productToRemove.Description}' removed successfully.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Product not found. Please try again.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a valid Product ID or press 'F' to return.");
+                }
+
+                // Pause before looping back
+                Console.WriteLine("Press any key to continue...");
+                Console.ReadKey();
+            }
+        }
+
+        static void UpdateProductInfo()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Product Management - Update Product Information");
+
+                // Display all products
+                Console.WriteLine("Available Products:");
+                if (products.Count == 0)
+                {
+                    Console.WriteLine("No products available in the system.");
+                }
+                else
+                {
+                    foreach (var product in products)
+                    {
+                        Console.WriteLine($"ID: {product.ProductID}, Name: {product.Description}, Price: {product.Price:C}, Stock: {product.StockQuantity}");
+                    }
+                }
+
+                Console.WriteLine("\nEnter the Product ID to update or press 'F' to return to the Manage Products menu.");
+                Console.Write("Input: ");
+
+                string input = Console.ReadLine();
+
+                // Check if the user pressed 'F'
+                if (string.Equals(input, "F", StringComparison.OrdinalIgnoreCase))
+                {
+                    ManageProducts(); // Redirect to Manage Products menu
+                    return;
+                }
+
+                // Validate if the input is a numeric Product ID
+                if (int.TryParse(input, out int productId))
+                {
+                    var productToUpdate = products.FirstOrDefault(p => p.ProductID == productId);
+                    if (productToUpdate != null)
+                    {
+                        Console.WriteLine($"You are editing: {productToUpdate.Description}");
+
+                        // Allow the user to select what to update
+                        Console.WriteLine("What would you like to update?");
+                        Console.WriteLine("1. Description");
+                        Console.WriteLine("2. Price");
+                        Console.WriteLine("3. Stock Quantity");
+                        Console.WriteLine("4. Cancel");
+
+                        string updateChoice = Console.ReadLine();
+
+                        switch (updateChoice)
+                        {
+                            case "1":
+                                Console.Write("Enter new description: ");
+                                productToUpdate.Description = Console.ReadLine();
+                                Console.WriteLine("Product description updated.");
+                                break;
+
+                            case "2":
+                                Console.Write("Enter new price: ");
+                                if (double.TryParse(Console.ReadLine(), out double newPrice))
+                                {
+                                    productToUpdate.Price = newPrice;
+                                    Console.WriteLine("Product price updated.");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Invalid price input.");
+                                }
+                                break;
+
+                            case "3":
+                                Console.Write("Enter new stock quantity: ");
+                                if (int.TryParse(Console.ReadLine(), out int newStock))
+                                {
+                                    productToUpdate.StockQuantity = newStock;
+                                    Console.WriteLine("Product stock updated.");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Invalid stock quantity input.");
+                                }
+                                break;
+
+                            case "4":
+                                Console.WriteLine("Product update cancelled.");
+                                break;
+
+                            default:
+                                Console.WriteLine("Invalid choice. Returning to update menu.");
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Product not found. Please try again.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a valid Product ID or press 'F' to return.");
+                }
+
+                // Pause before looping back
+                Console.WriteLine("Press any key to continue...");
+                Console.ReadKey();
+            }
+        }
+
+        static void ViewAllProducts()
+        {
+            Console.Clear();
+            Console.WriteLine("Product Management - View All Products");
+
+            // Check if there are any products in the system
+            if (products.Count == 0)
+            {
+                Console.WriteLine("No products available in the system.");
+            }
+            else
+            {
+                // Display the products
+                Console.WriteLine("ID | Name | Price | Stock Quantity");
+                Console.WriteLine("-------------------------------------");
+
+                foreach (var product in products)
+                {
+                    // Display product details
+                    Console.WriteLine($"{product.ProductID} | {product.Description} | {product.Price:C} | {product.StockQuantity}");
+                }
+            }
+
+            // Prompt to return to the Manage Products menu
+            Console.WriteLine("\nPress 'F' to return to the Manage Products menu.");
+            string input = Console.ReadLine();
+
+            if (string.Equals(input, "F", StringComparison.OrdinalIgnoreCase))
+            {
+                ManageProducts(); // Redirect to Manage Products menu
+            }
+            else
+            {
+                Console.WriteLine("Invalid input. Press 'F' to return to the Manage Products menu.");
+            }
+
+            // Pause to let user read the output
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+        }
+
+
+
+        static void SaveProductsToCSV()
+        {
+            string filePath = "products.csv";
+
+            using (var writer = new StreamWriter(filePath))
+            {
+                writer.WriteLine("ProductID,Description,CategoryID,Price,StockQuantity");
+                foreach (var product in products)
+                {
+                    writer.WriteLine($"{product.ProductID},{product.Description},{product.CategoryID},{product.Price},{product.StockQuantity}");
+                }
+            }
+
+            Console.WriteLine($"Products saved to {filePath}.");
+        }
+
 
     }
 }
