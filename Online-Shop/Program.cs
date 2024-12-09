@@ -42,6 +42,39 @@ namespace OnlineShop
                 baskets[customer.ID] = new ShoppingBasket();
             }
         }
+        static void RegisterCustomer()
+        {
+            Console.Clear();
+            Console.WriteLine("Register New Customer:");
+
+            Console.Write("Enter Username: ");
+            string username = Console.ReadLine();
+
+            if (customers.Any(c => c.UserName == username))
+            {
+                Console.WriteLine("Username already exists. Please choose a different username.");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.Write("Enter Password: ");
+            string password = Console.ReadLine();
+            Console.Write("Enter Email: ");
+            string email = Console.ReadLine();
+            Console.Write("Enter Phone Number: ");
+            string phoneNumber = Console.ReadLine();
+            Console.Write("Enter Street Address: ");
+            string addressStreet = Console.ReadLine();
+            Console.Write("Enter City: ");
+            string addressCity = Console.ReadLine();
+
+            int newId = customers.Any() ? customers.Max(c => c.ID) + 1 : 1;
+            customers.Add(new Customer(newId, username, password, email, phoneNumber, addressStreet, addressCity, "active", "Customer"));
+
+            Console.WriteLine("Customer registered successfully! Press any key to continue.");
+            Console.ReadKey();
+        }
+
 
 
         static void MainMenu()
@@ -52,7 +85,8 @@ namespace OnlineShop
                 Console.WriteLine("Welcome to Online Shop");
                 Console.WriteLine("1. Admin Menu");
                 Console.WriteLine("2. Customer Menu");
-                Console.WriteLine("3. Exit");
+                Console.WriteLine("3. Register New User");
+                Console.WriteLine("4. Exit");
 
                 switch (Console.ReadLine())
                 {
@@ -63,6 +97,9 @@ namespace OnlineShop
                         CustomerMenu();
                         break;
                     case "3":
+                        RegisterCustomer();
+                        break;
+                    case "4":
                         return;
                     default:
                         Console.WriteLine("Invalid choice. Try again.");
