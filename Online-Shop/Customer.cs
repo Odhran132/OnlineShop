@@ -22,14 +22,19 @@ namespace OnlineShop
 
             if (!customerOrders.Any())
             {
-                Console.WriteLine("You have no past orders.");
+                Console.WriteLine("No order history found.");
                 return;
             }
 
-            Console.WriteLine("Your Orders:");
+            Console.WriteLine("Order History:");
             foreach (var order in customerOrders)
             {
-                Console.WriteLine($"Order ID: {order.OrderID}, Date: {order.OrderDate}, Total: {order.CalculateTotal():C}");
+                Console.WriteLine($"Order ID: {order.OrderID}");
+                Console.WriteLine($"Date: {order.OrderDate}");
+                Console.WriteLine("Products:");
+                Console.WriteLine(order.GetProductDetails());
+                Console.WriteLine($"Total: {order.CalculateTotal():C}");
+                Console.WriteLine("-----------------------------------");
             }
         }
     }

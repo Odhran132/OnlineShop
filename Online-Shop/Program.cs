@@ -180,6 +180,9 @@ namespace OnlineShop
                 return;
             }
 
+            // Initialize the basket outside the loop
+            ShoppingBasket basket = baskets.ContainsKey(customer.ID) ? baskets[customer.ID] : new ShoppingBasket();
+
             while (true)
             {
                 Console.Clear();
@@ -193,43 +196,53 @@ namespace OnlineShop
                 switch (Console.ReadLine())
                 {
                     case "1":
-                        ViewAllProductsCustomer();
-                        Console.Write("Enter Product ID to add to basket: ");
-                        int productId = Convert.ToInt32(Console.ReadLine());
-                        Console.Write("Enter Quantity: ");
-                        int quantity = Convert.ToInt32(Console.ReadLine());
-
-                        var product = products.FirstOrDefault(p => p.ProductID == productId);
-                        if (product == null)
-                        {
-                            Console.WriteLine("Product not found.");
-                        }
-                        else
-                        {
-                            baskets[customer.ID].AddProduct(new Product(product.ProductID, product.Description, product.CategoryID, product.Price, quantity));
-                        }
+                        ViewAllProductsCustomer(products, basket);
                         break;
 
                     case "2":
-                        baskets[customer.ID].ViewBasket();
+                        basket.ViewBasket();
+                        Console.WriteLine("Press any key to return to the menu...");
+                        Console.ReadKey();
                         break;
 
                     case "3":
-                        var order = new Order(customer.ID, DateTime.Now, new List<Product>(baskets[customer.ID].Products));
-                        orders.Add(order);
-                        baskets[customer.ID].ClearBasket();
-                        Console.WriteLine($"Order placed successfully! Order ID: {order.OrderID}, Total: {order.CalculateTotal():C}");
+                        if (basket.Products.Count == 0)
+                        {
+                            Console.WriteLine("Your basket is empty. Add products to your basket before placing an order.");
+                            Console.ReadKey();
+                        }
+                        else
+                        {
+                            var order = new Order(customer.ID, DateTime.Now, new List<Product>(basket.Products));
+                            orders.Add(order);
+                            basket.ClearBasket();
+                            Console.WriteLine($"Order placed successfully! Order ID: {order.OrderID}, Total: {order.CalculateTotal():C}");
+                            Console.WriteLine("Press any key to return to the menu...");
+                            Console.ReadKey();
+                        }
                         break;
 
                     case "4":
                         customer.ViewOrderHistory(orders);
+                        Console.WriteLine("Press any key to return to the menu...");
+                        Console.ReadKey();
                         break;
 
                     case "5":
+                        // Save the basket back to the dictionary
+                        if (baskets.ContainsKey(customer.ID))
+                        {
+                            baskets[customer.ID] = basket;
+                        }
+                        else
+                        {
+                            baskets.Add(customer.ID, basket);
+                        }
                         return;
 
                     default:
-                        Console.WriteLine("Invalid choice.");
+                        Console.WriteLine("Invalid choice. Please try again.");
+                        Console.ReadKey();
                         break;
                 }
             }
@@ -520,43 +533,54 @@ namespace OnlineShop
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
         }
-        static void ViewAllProductsCustomer()
+        static void ViewAllProductsCustomer(List<Product> products, ShoppingBasket basket)
         {
             Console.Clear();
             Console.WriteLine("Customer product view - View All Products");
 
-            // Check if there are any products in the system
             if (products.Count == 0)
             {
                 Console.WriteLine("No products available in the system.");
             }
             else
             {
-                // Display the products
                 Console.WriteLine("ID | Name | Price | Stock Quantity");
                 Console.WriteLine("-------------------------------------");
 
                 foreach (var product in products)
                 {
-                    // Display product details
                     Console.WriteLine($"{product.ProductID} | {product.Description} | {product.Price:C} | {product.StockQuantity}");
+                }
+
+                Console.WriteLine("\nEnter Product ID to add to the basket, or 'F' to exit:");
+                string input = Console.ReadLine();
+
+                if (input.ToUpper() == "F")
+                {
+                    return;
+                }
+
+                if (int.TryParse(input, out int productId))
+                {
+                    var productToAdd = products.FirstOrDefault(p => p.ProductID == productId);
+
+                    if (productToAdd != null && productToAdd.StockQuantity > 0)
+                    {
+                        basket.AddProduct(productToAdd);
+                        productToAdd.StockQuantity--; // Decrement stock quantity
+                        //Console.WriteLine($"{productToAdd.Description} has been added to your basket.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Product not available or out of stock.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid Product ID.");
                 }
             }
 
-            // Prompt to return to the Customer menu
-            Console.WriteLine("\nPress 'F' to return to the Customer menu.");
-            string input = Console.ReadLine();
-
-            if (string.Equals(input, "F", StringComparison.OrdinalIgnoreCase))
-            {
-                CustomerMenu(); // Redirect to Customer menu
-            }
-            else
-            {
-                Console.WriteLine("Invalid input. Press 'F' to return to the Customer menu.");
-            }
-
-            // Pause to let user read the output
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
         }
@@ -581,4 +605,6 @@ namespace OnlineShop
 
 
     }
+
 }
+

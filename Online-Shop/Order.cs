@@ -23,6 +23,10 @@ namespace OnlineShop
         {
             return OrderProducts.Sum(p => p.Price * p.Quantity);
         }
+        public string GetProductDetails()
+        {
+            return string.Join("\n", OrderProducts.Select(p => $"- {p.Description} x{p.Quantity} @ {p.Price:C} each"));
+        }
     }
 }
 
