@@ -20,5 +20,14 @@
             StockQuantity = stockQuantity;
             Quantity = 0;
         }
+
+        public Product(int productID, string description, int categoryID, double price, int quantity)
+        {
+            ProductID = productID;
+            Description = description;
+            CategoryID = categoryID;
+            Price = price;
+            Quantity = quantity;
+        }
     }
 }

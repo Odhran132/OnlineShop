@@ -193,7 +193,7 @@ namespace OnlineShop
                 switch (Console.ReadLine())
                 {
                     case "1":
-                        ViewAllProducts();
+                        ViewAllProductsCustomer();
                         Console.Write("Enter Product ID to add to basket: ");
                         int productId = Convert.ToInt32(Console.ReadLine());
                         Console.Write("Enter Quantity: ");
@@ -514,6 +514,46 @@ namespace OnlineShop
             else
             {
                 Console.WriteLine("Invalid input. Press 'F' to return to the Manage Products menu.");
+            }
+
+            // Pause to let user read the output
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+        }
+        static void ViewAllProductsCustomer()
+        {
+            Console.Clear();
+            Console.WriteLine("Customer product view - View All Products");
+
+            // Check if there are any products in the system
+            if (products.Count == 0)
+            {
+                Console.WriteLine("No products available in the system.");
+            }
+            else
+            {
+                // Display the products
+                Console.WriteLine("ID | Name | Price | Stock Quantity");
+                Console.WriteLine("-------------------------------------");
+
+                foreach (var product in products)
+                {
+                    // Display product details
+                    Console.WriteLine($"{product.ProductID} | {product.Description} | {product.Price:C} | {product.StockQuantity}");
+                }
+            }
+
+            // Prompt to return to the Customer menu
+            Console.WriteLine("\nPress 'F' to return to the Customer menu.");
+            string input = Console.ReadLine();
+
+            if (string.Equals(input, "F", StringComparison.OrdinalIgnoreCase))
+            {
+                CustomerMenu(); // Redirect to Customer menu
+            }
+            else
+            {
+                Console.WriteLine("Invalid input. Press 'F' to return to the Customer menu.");
             }
 
             // Pause to let user read the output
