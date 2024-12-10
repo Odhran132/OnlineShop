@@ -6,7 +6,7 @@ namespace OnlineShop
 {
     class Program
     {
-        static List<Admin> admins = new List<Admin>();
+        static List<Admin> admins = new List<Admin>(); 
         static List<Customer> customers = new List<Customer>();
         static List<Product> products = new List<Product>();
         static List<Order> orders = new List<Order>();
@@ -28,13 +28,18 @@ namespace OnlineShop
 
             // Product Categories
             categories.Add(new ProductCategory(1, "Electronics"));
-            categories.Add(new ProductCategory(2, "Clothing"));
-            categories.Add(new ProductCategory(3, "Home Appliances"));
+            categories.Add(new ProductCategory(2, "Household"));
+            categories.Add(new ProductCategory(3, "Clothing"));
+            categories.Add(new ProductCategory(4, "Books"));
+            categories.Add(new ProductCategory(5, "Toys & Games"));
 
             // Products
-            products.Add(new Product(1, "Laptop", 1, 800.00, 10)); // Category: Electronics
-            products.Add(new Product(2, "Smartphone", 1, 500.00, 15)); // Category: Electronics
-            products.Add(new Product(3, "T-Shirt", 2, 20.00, 50)); // Category: Clothing
+            products.Add(new Product(1, "LED TV", "65 inch Samsung LED TV", 1, 459.99, 5)); // Category: Electronics
+            products.Add(new Product(2, "Vaccum Cleaner", "Dyson V11 Vacuum Cleaner ", 2, 599.99, 10)); // Category: Household
+            products.Add(new Product(3, "Running Shoes","Nike Air Zoom Pegasus", 3, 120.00, 20)); // Category: Clothing
+            products.Add(new Product(4, "Software Programming", "C# for beginners", 4, 12.99, 25)); // Category: Books
+            products.Add(new Product(5, "Bledner", "NutriBullet Pro", 2, 89.99, 15)); // Category: Household
+            products.Add(new Product(6, "Smartphone", "iPhone 13", 5, 999.99, 8)); // Category: Toys & Games
 
             // Shopping baskets
             foreach (var customer in customers)
