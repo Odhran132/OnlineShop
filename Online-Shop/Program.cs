@@ -38,7 +38,7 @@ namespace OnlineShop
             products.Add(new Product(2, "Vaccum Cleaner", "Dyson V11 Vacuum Cleaner ", 2, 599.99, 10)); // Category: Household
             products.Add(new Product(3, "Running Shoes","Nike Air Zoom Pegasus", 3, 120.00, 20)); // Category: Clothing
             products.Add(new Product(4, "Software Programming", "C# for beginners", 4, 12.99, 25)); // Category: Books
-            products.Add(new Product(5, "Bledner", "NutriBullet Pro", 2, 89.99, 15)); // Category: Household
+            products.Add(new Product(5, "Blender", "NutriBullet Pro", 2, 89.99, 15)); // Category: Household
             products.Add(new Product(6, "Smartphone", "iPhone 13", 5, 999.99, 8)); // Category: Toys & Games
 
             // Shopping baskets
@@ -148,10 +148,10 @@ namespace OnlineShop
                         ManageProducts();
                         break;
                     case "2":
-                        //ManageCustomers();
+                        ManageCustomers();
                         break;
                     case "3":
-                        //ManageProductCategories();
+                        ManageProductCategories();
                         break;
                     case "4":
                         SaveProductsToCSV();
@@ -342,7 +342,7 @@ namespace OnlineShop
                 {
                     foreach (var product in products)
                     {
-                        Console.WriteLine($"ID: {product.ProductID}, Name: {product.Description}, Price: {product.Price:C}, Stock: {product.StockQuantity}");
+                        Console.WriteLine($"ID: {product.ProductID}, Name: {product.Name}, Description: {product.Description}, Price: {product.Price:C}, Stock: {product.StockQuantity}");
                     }
                 }
 
@@ -401,7 +401,7 @@ namespace OnlineShop
                 {
                     foreach (var product in products)
                     {
-                        Console.WriteLine($"ID: {product.ProductID}, Name: {product.Description}, Price: {product.Price:C}, Stock: {product.StockQuantity}");
+                        Console.WriteLine($"ID: {product.ProductID}, Name: {product.Name}, Description: {product.Description}, Price: {product.Price:C}, Stock: {product.StockQuantity}");
                     }
                 }
 
@@ -423,40 +423,48 @@ namespace OnlineShop
                     var productToUpdate = products.FirstOrDefault(p => p.ProductID == productId);
                     if (productToUpdate != null)
                     {
-                        Console.WriteLine($"You are editing: {productToUpdate.Description}");
+                        Console.WriteLine($"You are editing: {productToUpdate.Name}");
 
                         // Allow the user to select what to update
                         Console.WriteLine("What would you like to update?");
-                        Console.WriteLine("1. Description");
-                        Console.WriteLine("2. Price");
-                        Console.WriteLine("3. Stock Quantity");
-                        Console.WriteLine("4. Cancel");
+                        Console.WriteLine("1. Name");
+                        Console.WriteLine("2. Description");
+                        Console.WriteLine("3. Price");
+                        Console.WriteLine("4. Stock Quantity");
+                        Console.WriteLine("5. Cancel");
 
                         string updateChoice = Console.ReadLine();
 
                         switch (updateChoice)
                         {
                             case "1":
-                                Console.Write("Enter new description: ");
-                                productToUpdate.Description = Console.ReadLine();
-                                Console.WriteLine("Product description updated.");
+                                Console.Write("Enter new Name: ");
+                                productToUpdate.Name = Console.ReadLine();
+                                Console.WriteLine("Product Name updated.");
                                 break;
 
                             case "2":
+
+                                Console.Write("Enter new Description: ");
+                                productToUpdate.Name = Console.ReadLine();
+                                Console.WriteLine("Product Description updated.");
+                                break;
+
+                            case "3":
                                 Console.Write("Enter new price: ");
                                 if (double.TryParse(Console.ReadLine(), out double newPrice))
                                 {
                                     productToUpdate.Price = newPrice;
-                                    Console.WriteLine("Product price updated.");
+                                    Console.WriteLine("Product Price updated.");
                                 }
                                 else
                                 {
-                                    Console.WriteLine("Invalid price input.");
+                                    Console.WriteLine("Invalid Price input.");
                                 }
                                 break;
 
-                            case "3":
-                                Console.Write("Enter new stock quantity: ");
+                            case "4":
+                                Console.Write("Enter new Stock quantity: ");
                                 if (int.TryParse(Console.ReadLine(), out int newStock))
                                 {
                                     productToUpdate.StockQuantity = newStock;
@@ -468,7 +476,7 @@ namespace OnlineShop
                                 }
                                 break;
 
-                            case "4":
+                            case "5":
                                 Console.WriteLine("Product update cancelled.");
                                 break;
 
@@ -506,14 +514,24 @@ namespace OnlineShop
             else
             {
                 // Display the products
-                Console.WriteLine("ID | Name | Price | Stock Quantity");
-                Console.WriteLine("-------------------------------------");
+                Console.WriteLine("ID | Name | Description | Price | Stock Quantity | Total Value");
+                Console.WriteLine("--------------------------------------------------");
+
+                decimal totalValue = 0; 
 
                 foreach (var product in products)
                 {
-                    // Display product details
-                    Console.WriteLine($"{product.ProductID} | {product.Description} | {product.Price:C} | {product.StockQuantity}");
+                    // Calculate the total value for this product (Price * StockQuantity)
+                    decimal productTotalValue = (decimal)product.Price * product.StockQuantity;  // Cast product.Price to decimal
+                    totalValue += productTotalValue; 
+
+                    // Display product details along with the total value for this product
+                    Console.WriteLine($"{product.ProductID} |{product.Name} | {product.Description} | {product.Price:C} | {product.StockQuantity} | {productTotalValue:C}");
                 }
+
+                // Display the total value of all products
+                Console.WriteLine("--------------------------------------------------");
+                Console.WriteLine($"Total Value of All Products: {totalValue:C}");
             }
 
             // Prompt to return to the Manage Products menu
@@ -533,6 +551,10 @@ namespace OnlineShop
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
         }
+
+
+
+
         static void ViewAllProductsCustomer(List<Product> products, ShoppingBasket basket)
         {
             Console.Clear();
@@ -587,21 +609,488 @@ namespace OnlineShop
 
 
 
-        static void SaveProductsToCSV()
+        static void ManageCustomers()
         {
-            string filePath = "products.csv";
-
-            using (var writer = new StreamWriter(filePath))
+            while (true)
             {
-                writer.WriteLine("ProductID,Description,CategoryID,Price,StockQuantity");
-                foreach (var product in products)
+                Console.Clear();
+                Console.WriteLine("Customer Management");
+
+                Console.WriteLine("1. Add Customer");
+                Console.WriteLine("2. Edit Customer");
+                Console.WriteLine("3. Remove Customer");
+                Console.WriteLine("4. View All Customers");
+                Console.WriteLine("Press 'F' to return to the previous menu.");
+
+                string choice = Console.ReadLine().ToUpper();
+
+                switch (choice)
                 {
-                    writer.WriteLine($"{product.ProductID},{product.Description},{product.CategoryID},{product.Price},{product.StockQuantity}");
+                    case "1":
+                        AddCustomer();
+                        break;
+                    case "2":
+                        EditCustomer();
+                        break;
+                    case "3":
+                        RemoveCustomer();
+                        break;
+                    case "4":
+                        ViewAllCustomers();
+                        break;
+                    case "F":
+                        return; // Return to the previous menu
+                    default:
+                        Console.WriteLine("Invalid option. Please try again.");
+                        break;
+                }
+            }
+        }
+
+
+        static void AddCustomer()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Add Customer");
+
+                // Ask for the details of the new customer
+                Console.Write("Enter Customer Username (or press 'F' to return): ");
+                string userName = Console.ReadLine();
+                if (userName.ToUpper() == "F") return;
+
+                Console.Write("Enter Password: ");
+                string password = Console.ReadLine();
+
+                Console.Write("Enter Email: ");
+                string email = Console.ReadLine();
+
+                Console.Write("Enter Phone Number: ");
+                string phoneNumber = Console.ReadLine();
+
+                Console.Write("Enter Street Address: ");
+                string addressStreet = Console.ReadLine();
+
+                Console.Write("Enter City: ");
+                string addressCity = Console.ReadLine();
+
+                Console.Write("Enter Status (Active/Inactive): ");
+                string status = Console.ReadLine();
+
+                Console.Write("Enter Role (Admin/Customer): ");
+                string role = Console.ReadLine();
+
+                // Generate a new Customer ID
+                int customerId = customers.Count + 1;
+
+                // Create the new customer
+                Customer newCustomer = new Customer(customerId, userName, password, email, phoneNumber, addressStreet, addressCity, status, role);
+
+                // Add the customer to the list
+                customers.Add(newCustomer);
+
+                Console.WriteLine("Customer added successfully!");
+
+                // Wait for user to continue
+                Console.WriteLine("Press any key to continue...");
+                Console.ReadKey();
+                return;
+            }
+        }
+
+
+        static void EditCustomer()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Edit Customer");
+
+                // Display all customers
+                if (customers.Count == 0)
+                {
+                    Console.WriteLine("No customers found.");
+                }
+                else
+                {
+                    Console.WriteLine("ID | Username | Email | Phone");
+                    foreach (var customer in customers)
+                    {
+                        Console.WriteLine($"{customer.ID} | {customer.UserName} | {customer.Email} | {customer.PhoneNumber}");
+                    }
+                }
+
+                // Ask the user for the Customer ID to edit
+                Console.Write("Enter the Customer ID to edit (or press 'F' to return): ");
+                string input = Console.ReadLine();
+                if (input.ToUpper() == "F") return;
+
+                if (int.TryParse(input, out int customerId))
+                {
+                    var customer = customers.FirstOrDefault(c => c.ID == customerId);
+                    if (customer != null)
+                    {
+                        // Allow the user to edit customer details
+                        Console.Write("Enter new Username (or press Enter to keep the current): ");
+                        string newUserName = Console.ReadLine();
+                        if (!string.IsNullOrEmpty(newUserName)) customer.UserName = newUserName;
+
+                        Console.Write("Enter new Email (or press Enter to keep the current): ");
+                        string newEmail = Console.ReadLine();
+                        if (!string.IsNullOrEmpty(newEmail)) customer.Email = newEmail;
+
+                        Console.Write("Enter new Phone Number (or press Enter to keep the current): ");
+                        string newPhoneNumber = Console.ReadLine();
+                        if (!string.IsNullOrEmpty(newPhoneNumber)) customer.PhoneNumber = newPhoneNumber;
+
+                        Console.Write("Enter new Street Address (or press Enter to keep the current): ");
+                        string newStreet = Console.ReadLine();
+                        if (!string.IsNullOrEmpty(newStreet)) customer.AddressStreet = newStreet;
+
+                        Console.Write("Enter new City (or press Enter to keep the current): ");
+                        string newCity = Console.ReadLine();
+                        if (!string.IsNullOrEmpty(newCity)) customer.AddressCity = newCity;
+
+                        Console.Write("Enter new Status (Active/Inactive): ");
+                        string newStatus = Console.ReadLine();
+                        if (!string.IsNullOrEmpty(newStatus)) customer.Status = newStatus;
+
+                        Console.Write("Enter new Role (Admin/Customer): ");
+                        string newRole = Console.ReadLine();
+                        if (!string.IsNullOrEmpty(newRole)) customer.Role = newRole;
+
+                        Console.WriteLine("Customer details updated successfully!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Customer not found.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid Customer ID.");
+                }
+
+                // Wait for user to continue
+                Console.WriteLine("Press any key to continue...");
+                Console.ReadKey();
+                return;
+            }
+        }
+
+
+        static void RemoveCustomer()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Remove Customer");
+
+                // Display all customers
+                if (customers.Count == 0)
+                {
+                    Console.WriteLine("No customers found.");
+                }
+                else
+                {
+                    Console.WriteLine("ID | Username | Email | Phone");
+                    foreach (var customer in customers)
+                    {
+                        Console.WriteLine($"{customer.ID} | {customer.UserName} | {customer.Email} | {customer.PhoneNumber}");
+                    }
+                }
+
+                // Ask the user for the Customer ID to remove
+                Console.Write("Enter the Customer ID to remove (or press 'F' to return): ");
+                string input = Console.ReadLine();
+                if (input.ToUpper() == "F") return;
+
+                if (int.TryParse(input, out int customerId))
+                {
+                    var customerToRemove = customers.FirstOrDefault(c => c.ID == customerId);
+                    if (customerToRemove != null)
+                    {
+                        customers.Remove(customerToRemove);
+                        Console.WriteLine("Customer removed successfully!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Customer not found.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid Customer ID.");
+                }
+
+                // Wait for user to continue
+                Console.WriteLine("Press any key to continue...");
+                Console.ReadKey();
+                return;
+            }
+        }
+
+
+        static void ViewAllCustomers()
+        {
+            Console.Clear();
+            Console.WriteLine("View All Customers");
+
+            if (customers.Count == 0)
+            {
+                Console.WriteLine("No customers found.");
+            }
+            else
+            {
+                Console.WriteLine("ID | Username | Email | Phone");
+                foreach (var customer in customers)
+                {
+                    Console.WriteLine($"{customer.ID} | {customer.UserName} | {customer.Email} | {customer.PhoneNumber}");
                 }
             }
 
-            Console.WriteLine($"Products saved to {filePath}.");
+            // Option to return to the previous menu
+            Console.WriteLine("\nPress 'F' to return to the previous menu.");
+            string input = Console.ReadLine();
+
+            if (input.ToUpper() == "F")
+            {
+                return;
+            }
+
+            // Wait for user to continue
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
         }
+
+
+
+
+
+
+        static void ManageProductCategories()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Manage Product Categories");
+                Console.WriteLine("-------------------------");
+                Console.WriteLine("1. View All Categories");
+                Console.WriteLine("2. Add New Category");
+                Console.WriteLine("3. Update Category");
+                Console.WriteLine("F. Return to Previous Menu");
+                Console.Write("Choose an option: ");
+
+                string input = Console.ReadLine().ToUpper();
+
+                switch (input)
+                {
+                    case "1":
+                        ViewAllCategories();
+                        break;
+                    case "2":
+                        AddProductCategory();
+                        break;
+                    case "3":
+                        UpdateProductCategory();
+                        break;
+                    case "F":
+                        return; // Return to the previous menu
+                    default:
+                        Console.WriteLine("Invalid option. Try again.");
+                        break;
+                }
+            }
+        }
+        
+
+        static void AddProductCategory()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Add New Product Category");
+                Console.WriteLine("--------------------------");
+
+                Console.Write("Enter the category name (or press 'F' to cancel): ");
+                string categoryName = Console.ReadLine();
+
+                if (string.Equals(categoryName, "F", StringComparison.OrdinalIgnoreCase))
+                {
+                    return; // Return to the previous menu
+                }
+
+                if (string.IsNullOrWhiteSpace(categoryName))
+                {
+                    Console.WriteLine("Category name cannot be empty. Please try again.");
+                    continue;
+                }
+
+                // Generate a new Category ID (based on existing categories)
+                int newCategoryId = categories.Count + 1;
+
+                // Add the new category to the list
+                categories.Add(new ProductCategory(newCategoryId, categoryName));
+                Console.WriteLine($"Product category '{categoryName}' added successfully.");
+
+                // Pause and ask if user wants to add another category
+                Console.WriteLine("\nPress any key to add another category or 'F' to return to the previous menu.");
+                string input = Console.ReadLine();
+
+                if (string.Equals(input, "F", StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+            }
+        }
+
+
+        static void UpdateProductCategory()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Update Product Category");
+                Console.WriteLine("-------------------------");
+
+                if (categories.Count == 0)
+                {
+                    Console.WriteLine("No categories available.");
+                }
+                else
+                {
+                    foreach (var category in categories)
+                    {
+                        Console.WriteLine($"Category ID: {category.CategoryID}, Name: {category.CategoryName}");
+                    }
+                }
+
+                Console.Write("Enter the Category ID to update (or press 'F' to cancel): ");
+                string input = Console.ReadLine();
+
+                if (string.Equals(input, "F", StringComparison.OrdinalIgnoreCase))
+                {
+                    return; // Return to the previous menu
+                }
+
+                if (int.TryParse(input, out int categoryId))
+                {
+                    var category = categories.FirstOrDefault(c => c.CategoryID == categoryId);
+                    if (category != null)
+                    {
+                        Console.WriteLine($"Updating category: {category.CategoryName}");
+                        Console.Write("Enter the new name for the category (or press 'F' to cancel): ");
+                        string newCategoryName = Console.ReadLine();
+
+                        if (string.Equals(newCategoryName, "F", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return; // Return to the previous menu
+                        }
+
+                        if (string.IsNullOrWhiteSpace(newCategoryName))
+                        {
+                            Console.WriteLine("Category name cannot be empty. Please try again.");
+                            continue;
+                        }
+
+                        // Update the category name
+                        category.CategoryName = newCategoryName;
+                        Console.WriteLine($"Category '{category.CategoryName}' updated successfully.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Category not found. Please try again.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a valid Category ID.");
+                }
+
+                Console.WriteLine("\nPress any key to continue or 'F' to return to the Manage Product Categories menu.");
+                if (string.Equals(Console.ReadLine(), "F", StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+            }
+        }
+
+
+        static void ViewAllCategories()
+        {
+            Console.Clear();
+            Console.WriteLine("View All Product Categories");
+            Console.WriteLine("----------------------------");
+
+            if (categories.Count == 0)
+            {
+                Console.WriteLine("No categories available.");
+            }
+            else
+            {
+                foreach (var category in categories)
+                {
+                    Console.WriteLine($"Category ID: {category.CategoryID}, Name: {category.CategoryName}");
+                }
+            }
+
+            Console.WriteLine("\nPress 'F' to return to the Manage Product Categories menu.");
+            if (string.Equals(Console.ReadLine(), "F", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+        }
+
+
+
+
+        static void SaveProductsToCSV()
+        {
+            string fileName = "products.csv";
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);  // This saves the file in the current directory
+
+            try
+            {
+                // Writing to the CSV file
+                using (var writer = new StreamWriter(filePath))
+                {
+                    writer.WriteLine("ProductID,Description,CategoryID,Price,StockQuantity");
+                    foreach (var product in products)
+                    {
+                        writer.WriteLine($"{product.ProductID},{product.Description},{product.CategoryID},{product.Price},{product.StockQuantity}");
+                    }
+                }
+
+                // Clear the console and display the confirmation message on a new screen
+                Console.Clear();
+                Console.WriteLine($"Products have been successfully saved to {filePath}");
+                Console.WriteLine("\nPress 'F' to return to the previous menu.");
+
+                // Wait for user input to return to the previous menu
+                string input = Console.ReadLine();
+                if (string.Equals(input, "F", StringComparison.OrdinalIgnoreCase))
+                {
+                    // You can call the method for the previous screen/menu here, for example:
+                    ManageProducts();  // Assuming ManageProducts() is the previous menu method
+                }
+                else
+                {
+                    // Optionally, you can show an invalid input message or wait for correct input
+                    Console.WriteLine("Invalid input. Press 'F' to return to the previous menu.");
+                    Console.ReadKey();  // Pause before returning
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any potential errors during file write
+                Console.Clear(); // Clear the console on error as well
+                Console.WriteLine("An error occurred while saving the products: " + ex.Message);
+                Console.WriteLine("\nPress 'F' to return to the previous menu.");
+                Console.ReadKey();  // Wait for the user to press 'F' to go back
+            }
+        }
+
 
 
     }
